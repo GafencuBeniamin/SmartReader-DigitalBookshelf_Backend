@@ -31,7 +31,6 @@ public class BookService {
     }
 
     public BookDto getBookById(Integer id){
-
         Book result=bookRepository.findById(id).orElseThrow(() -> new CrudOperationException("Book does not exist"));
         return mapBookToDto(result);
     }
