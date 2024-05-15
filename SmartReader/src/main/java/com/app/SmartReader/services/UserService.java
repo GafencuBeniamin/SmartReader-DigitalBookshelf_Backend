@@ -9,6 +9,7 @@ import com.app.SmartReader.repositories.UserRepository;
 import com.app.SmartReader.utils.enums.UserRole;
 import com.app.SmartReader.utils.exceptions.AppException;
 import com.app.SmartReader.utils.mappers.UserMapper;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -53,6 +54,7 @@ public class UserService {
         return userMapper.toUserDto(savedUser);
     }
 
+    @Transactional
     public UserDto removeUser(String username){
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new AppException("Unknown user", HttpStatus.NOT_FOUND));
