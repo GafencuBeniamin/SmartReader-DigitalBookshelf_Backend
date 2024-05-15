@@ -9,9 +9,11 @@ import com.app.SmartReader.repositories.UserRepository;
 import com.app.SmartReader.utils.exceptions.CrudOperationException;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @AllArgsConstructor
@@ -90,9 +92,9 @@ public class BookService {
                         .id(result.getCreatedBy().getId())
                         .role(result.getCreatedBy().getRole())
                         .email(result.getCreatedBy().getEmail())
-                        .profile(result.getCreatedBy().getProfile())
+                        .picture(result.getCreatedBy().getPicture())
                         .username(result.getCreatedBy().getUsername())
-                        .password(result.getCreatedBy().getPassword())
+                        .friends(result.getCreatedBy().getFriends())
                         .build())
                 .isPublic(result.getIsPublic())
                 .language(result.getLanguage())

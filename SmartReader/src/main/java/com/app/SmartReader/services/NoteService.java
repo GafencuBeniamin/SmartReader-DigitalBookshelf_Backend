@@ -12,9 +12,11 @@ import com.app.SmartReader.repositories.UserRepository;
 import com.app.SmartReader.utils.exceptions.CrudOperationException;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @AllArgsConstructor
@@ -89,9 +91,9 @@ public class NoteService {
                         .id(note.getCreatedBy().getId())
                         .role(note.getCreatedBy().getRole())
                         .email(note.getCreatedBy().getEmail())
-                        .profile(note.getCreatedBy().getProfile())
+                        .picture(note.getCreatedBy().getPicture())
                         .username(note.getCreatedBy().getUsername())
-                        .password(note.getCreatedBy().getPassword())
+                        .friends(note.getCreatedBy().getFriends())
                         .build())
                 .book(BookDto.builder()
                         .id(note.getBook().getId())
@@ -100,9 +102,9 @@ public class NoteService {
                                 .id(note.getBook().getCreatedBy().getId())
                                 .role(note.getBook().getCreatedBy().getRole())
                                 .email(note.getBook().getCreatedBy().getEmail())
-                                .profile(note.getBook().getCreatedBy().getProfile())
+                                .picture(note.getBook().getCreatedBy().getPicture())
                                 .username(note.getBook().getCreatedBy().getUsername())
-                                .password(note.getBook().getCreatedBy().getPassword())
+                                .friends(note.getCreatedBy().getFriends())
                                 .build())
                         .editure(note.getBook().getEditure())
                         .genre(note.getBook().getGenre())

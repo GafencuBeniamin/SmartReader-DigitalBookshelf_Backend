@@ -25,12 +25,15 @@ public class User {
     @JsonIgnore
     @OneToMany(mappedBy = "id", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Set<Note> notes;
+    @Column(unique = true)
     private String username;
     private String password;
+    @Column(unique = true)
     private String email;
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private UserRole role;
-    private String profile;
+    private String picture;
     @JsonIgnore
     @ManyToMany
     @JoinTable(
