@@ -2,7 +2,6 @@ package com.app.SmartReader.services;
 
 import com.app.SmartReader.dtos.BookDto;
 import com.app.SmartReader.dtos.NoteDto;
-import com.app.SmartReader.dtos.UserDto;
 import com.app.SmartReader.models.Book;
 import com.app.SmartReader.models.Note;
 import com.app.SmartReader.models.User;
@@ -10,14 +9,15 @@ import com.app.SmartReader.repositories.BookRepository;
 import com.app.SmartReader.repositories.NoteRepository;
 import com.app.SmartReader.repositories.UserRepository;
 import com.app.SmartReader.utils.exceptions.CrudOperationException;
+import com.app.SmartReader.utils.mappers.EntityToDtoMapper;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
 @AllArgsConstructor
 @Service
@@ -34,18 +34,18 @@ public class NoteService {
         Iterable<Note> notes = noteRepository.findAll();
         List<NoteDto> results = new ArrayList<>();
 
-        notes.forEach(result -> results.add(mapNoteToDto(result)));
+        notes.forEach(result -> results.add(EntityToDtoMapper.mapNoteToDto(result)));
         return results;
     }
 
     public NoteDto getNoteById(Integer id) {
         Note result = noteRepository.findById(id).orElseThrow(() -> new CrudOperationException("Note does not exist"));
-        return mapNoteToDto(result);
+        return EntityToDtoMapper.mapNoteToDto(result);
     }
 
     public NoteDto addNote(NoteDto noteDto) {
-        User user = userRepository.findById(noteDto.getCreatedBy().getId()).orElseThrow(() -> new CrudOperationException("User does not exist"));
-        Book book = bookRepository.findById(noteDto.getBook().getId()).orElseThrow(() -> new CrudOperationException("Book does not exist"));
+        User user = userRepository.findById(noteDto.getCreatedBy()).orElseThrow(() -> new CrudOperationException("User does not exist"));
+        Book book = bookRepository.findById(noteDto.getBook()).orElseThrow(() -> new CrudOperationException("Book does not exist"));
 
         Note note = Note.builder()
                 .createdBy(user)
@@ -62,8 +62,8 @@ public class NoteService {
 
     public NoteDto updateNote(Integer id, NoteDto noteDto) {
         Note note = noteRepository.findById(id).orElseThrow(() -> new CrudOperationException("Note does not exist"));
-        User user = userRepository.findById(noteDto.getCreatedBy().getId()).orElseThrow(() -> new CrudOperationException("User does not exist"));
-        Book book = bookRepository.findById(noteDto.getBook().getId()).orElseThrow(() -> new CrudOperationException("Book does not exist"));
+        User user = userRepository.findById(noteDto.getCreatedBy()).orElseThrow(() -> new CrudOperationException("User does not exist"));
+        Book book = bookRepository.findById(noteDto.getBook()).orElseThrow(() -> new CrudOperationException("Book does not exist"));
 
         note.setContent(noteDto.getContent());
         note.setPage(noteDto.getPage());
@@ -78,43 +78,83 @@ public class NoteService {
     public NoteDto removeNote(Integer id) {
         Note result = noteRepository.findById(id).orElseThrow(() -> new CrudOperationException("Note does not exist"));
         noteRepository.deleteById(id);
-        return mapNoteToDto(result);
+        return EntityToDtoMapper.mapNoteToDto(result);
     }
 
-    private NoteDto mapNoteToDto(Note note) {
-        return NoteDto.builder()
-                .id(note.getId())
-                .content(note.getContent())
-                .page(note.getPage())
-                .comment(note.getComment())
-                .createdBy(UserDto.builder()
-                        .id(note.getCreatedBy().getId())
-                        .role(note.getCreatedBy().getRole())
-                        .email(note.getCreatedBy().getEmail())
-                        .picture(note.getCreatedBy().getPicture())
-                        .username(note.getCreatedBy().getUsername())
-                        .friends(note.getCreatedBy().getFriends())
-                        .build())
-                .book(BookDto.builder()
-                        .id(note.getBook().getId())
-                        .author(note.getBook().getAuthor())
-                        .createdBy(UserDto.builder()
-                                .id(note.getBook().getCreatedBy().getId())
-                                .role(note.getBook().getCreatedBy().getRole())
-                                .email(note.getBook().getCreatedBy().getEmail())
-                                .picture(note.getBook().getCreatedBy().getPicture())
-                                .username(note.getBook().getCreatedBy().getUsername())
-                                .friends(note.getCreatedBy().getFriends())
-                                .build())
-                        .editure(note.getBook().getEditure())
-                        .genre(note.getBook().getGenre())
-                        .image(note.getBook().getImage())
-                        .isPublic(note.getBook().getIsPublic())
-                        .language(note.getBook().getLanguage())
-                        .noOfPages(note.getBook().getNoOfPages())
-                        .state(note.getBook().getState())
-                        .title(note.getBook().getTitle())
-                        .build())
-                .build();
+    /** USER SPECIFIC CRUD BELOW **/
+
+    public List<NoteDto> getUserNotesFromBook(Integer bookId, String username){
+        Optional<User> userOptional = userRepository.findByUsername(username);
+
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
+            Set<Note> notes = user.getNotes();
+            List<NoteDto> results = new ArrayList<>();
+            notes.forEach(note -> {
+                if (note.getBook().getId().equals(bookId)) {
+                    results.add(EntityToDtoMapper.mapNoteToDto(note));
+                }
+            });
+            return results;
+        }
+        else throw new CrudOperationException("User does not exist");
     }
+
+    public NoteDto addNoteByUser(NoteDto noteDto,String username){
+        Book book = bookRepository.findById(noteDto.getBook()).orElseThrow(() -> new CrudOperationException("Book does not exist"));
+
+        Optional<User> userOptional = userRepository.findByUsername(username);
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
+            Note note = Note.builder()
+                    .createdBy(user)
+                    .book(book)
+                    .content(noteDto.getContent())
+                    .page(noteDto.getPage())
+                    .comment(noteDto.getComment())
+                    .build();
+            noteRepository.save(note);
+            noteDto.setId(note.getId());
+
+            Set<Note> userNotes = user.getNotes();
+            userNotes.add(note);
+            user.setNotes(userNotes);
+            userRepository.save(user);
+
+            Set<Note> bookNotes = book.getNotes();
+            bookNotes.add(note);
+            book.setNotes(bookNotes);
+            bookRepository.save(book);
+
+            return EntityToDtoMapper.mapNoteToDto(note);
+        }
+        else throw new CrudOperationException("User does not exist");
+    }
+    public NoteDto updateNoteByUser (Integer id, NoteDto noteDto, String username){
+        User user =  userRepository.findByUsername(username).orElseThrow(() -> new CrudOperationException("User does not exist"));
+        Note note= noteRepository.findById(id).orElseThrow(() -> new CrudOperationException("Note does not exist"));
+        Book book = bookRepository.findById(noteDto.getBook()).orElseThrow(() -> new CrudOperationException("Book does not exist"));
+        if (note.getCreatedBy().getId().equals(user.getId())) {
+            note.setContent(noteDto.getContent());
+            note.setPage(noteDto.getPage());
+            note.setComment(noteDto.getComment());
+            note.setCreatedBy(user);
+            note.setBook(book);
+            return EntityToDtoMapper.mapNoteToDto(note);
+        }
+        else throw  new CrudOperationException("User can't edit an unowned note");
+    }
+
+    public NoteDto removeNoteByUser (Integer id, String username){
+        User user =  userRepository.findByUsername(username).orElseThrow(() -> new CrudOperationException("User does not exist"));
+        Note result = noteRepository.findById(id).orElseThrow(() -> new CrudOperationException("Note does not exist"));
+        if (result.getCreatedBy().getId().equals(user.getId())){
+            noteRepository.deleteById(id);
+            return EntityToDtoMapper.mapNoteToDto(result);
+        }
+        else throw new CrudOperationException("User can't delete an unowned note");
+
+    }
+
+
 }

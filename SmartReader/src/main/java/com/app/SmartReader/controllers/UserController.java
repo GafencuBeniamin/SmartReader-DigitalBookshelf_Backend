@@ -10,6 +10,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/user")
 public class UserController {
@@ -20,34 +22,23 @@ public class UserController {
     public UserController(UserService userService){
         this.userService = userService;
     }
-//    @Autowired
-//    private PasswordEncoder passwordEncoder;
-//
-//    @GetMapping("/")
-//    public String goHome(){
-//        return "This is publicly accesible within needing auth";
-//    }
-//    @PostMapping("/save")
-//    public ResponseEntity<Object> saveUser(@RequestBody User user){
-//        user.setPassword(passwordEncoder.encode(user.getPassword()));
-//        User result = userRepository.save(user);
-//        if (result.getId() > 0){
-//            return ResponseEntity.ok("User was saved");
-//        }
-//        return ResponseEntity.status(404).body("Error: User not saved");
-//    }
     @GetMapping("/all")
-    public ResponseEntity<Object> getAllUsers(){
-        return ResponseEntity.ok(userRepository.findAll());
+    public ResponseEntity<List<UserDto>> getAllUsers(){
+        return ResponseEntity.ok(userService.getAllUsers());
     }
-    @GetMapping("/single")
-    public ResponseEntity<Object> getUserByUsername(String username){
-        return ResponseEntity.ok(userRepository.findAll());
+    @GetMapping("/single/{username}")
+    public ResponseEntity<Object> getUserByUsername(@PathVariable String username){
+        return ResponseEntity.ok(userRepository.findByUsername(username));
     }
     @GetMapping("/myDetails")
     @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('USER') or hasAuthority('MODERATOR')")
     public ResponseEntity<Object> getMyDetails(){
         return ResponseEntity.ok(userRepository.findByUsername(getLoggedInUserDetails().getUsername()));
+    }
+    @PutMapping("/promoteUserToModerator/{username}")
+    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('MODERATOR')")
+    public ResponseEntity<Object> promoteUserToModerator(@PathVariable String username){
+        return ResponseEntity.ok(userService.promoteUserToModerator(username));
     }
     public UserDto getLoggedInUserDetails(){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -61,4 +52,5 @@ public class UserController {
     public ResponseEntity<UserDto> deleteUser(@PathVariable String username){
         return ResponseEntity.ok(userService.removeUser(username));
     }
+
 }

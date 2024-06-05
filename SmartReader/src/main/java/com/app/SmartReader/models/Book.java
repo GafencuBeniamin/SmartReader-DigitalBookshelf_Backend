@@ -1,6 +1,7 @@
 package com.app.SmartReader.models;
 
 import com.app.SmartReader.utils.enums.BookState;
+import com.app.SmartReader.utils.enums.BookStatus;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
@@ -25,13 +26,14 @@ public class Book {
     private Integer noOfPages;
     private String image;
     private String language;
-    @JsonIgnore
-    @OneToMany(mappedBy = "id", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "book", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Set<Note> notes;
     private String genre;
-    private Boolean isPublic;
+    private BookStatus isPublic;
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "user_id", nullable = false)
     private User createdBy;
+    @ManyToMany(mappedBy = "books")
+    private Set<User> users;
     private String editure;
 }

@@ -34,5 +34,11 @@ public class AuthController {
         createdUser.setToken(userAuthenticationProvider.createToken(user.getUsername()));
         return ResponseEntity.created(URI.create("/users/" + createdUser.getId())).body(createdUser);
     }
+    @PostMapping("/registerAdmin")
+    public ResponseEntity<UserDto> registerAdmin(@RequestBody @Valid SignUpDto user) {
+        UserDto createdUser = userService.registerAdmin(user);
+        createdUser.setToken(userAuthenticationProvider.createToken(user.getUsername()));
+        return ResponseEntity.created(URI.create("/users/" + createdUser.getId())).body(createdUser);
+    }
 
 }

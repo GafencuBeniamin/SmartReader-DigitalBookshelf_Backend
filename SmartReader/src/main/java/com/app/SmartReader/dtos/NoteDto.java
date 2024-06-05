@@ -11,8 +11,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class NoteDto {
     private Integer id;
-    private BookDto book;
-    private UserDto createdBy;
+    private Integer book;
+    private Integer createdBy;
     private String content;
     private Integer page;
     private String comment;

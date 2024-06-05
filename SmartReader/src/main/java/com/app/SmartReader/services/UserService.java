@@ -1,13 +1,12 @@
 package com.app.SmartReader.services;
 
 
-import com.app.SmartReader.dtos.CredentialsDto;
-import com.app.SmartReader.dtos.SignUpDto;
-import com.app.SmartReader.dtos.UserDto;
+import com.app.SmartReader.dtos.*;
 import com.app.SmartReader.models.User;
 import com.app.SmartReader.repositories.UserRepository;
 import com.app.SmartReader.utils.enums.UserRole;
 import com.app.SmartReader.utils.exceptions.AppException;
+import com.app.SmartReader.utils.mappers.EntityToDtoMapper;
 import com.app.SmartReader.utils.mappers.UserMapper;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +15,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.nio.CharBuffer;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
+
+import static com.app.SmartReader.utils.enums.UserRole.MODERATOR;
 
 @RequiredArgsConstructor
 @Service
@@ -39,14 +42,41 @@ public class UserService {
     }
 
     public UserDto register(SignUpDto userDto) {
-        Optional<User> optionalUser = userRepository.findByUsername(userDto.getUsername());
+        Optional<User> optionalUserForEmail = userRepository.findByEmail(userDto.getEmail());
 
-        if (optionalUser.isPresent()) {
+        if (optionalUserForEmail.isPresent()) {
+            throw new AppException("Email already registered", HttpStatus.BAD_REQUEST);
+        }
+
+        Optional<User> optionalUserForUsername = userRepository.findByUsername(userDto.getUsername());
+
+        if (optionalUserForUsername.isPresent()) {
             throw new AppException("Username already exists", HttpStatus.BAD_REQUEST);
         }
 
         User user = userMapper.signUpToUser(userDto);
         user.setRole(UserRole.USER);
+        user.setPassword(passwordEncoder.encode(CharBuffer.wrap(userDto.getPassword())));
+
+        User savedUser = userRepository.save(user);
+
+        return userMapper.toUserDto(savedUser);
+    }
+    public UserDto registerAdmin(SignUpDto userDto){
+        Optional<User> optionalUserForEmail = userRepository.findByEmail(userDto.getEmail());
+
+        if (optionalUserForEmail.isPresent()) {
+            throw new AppException("Email already registered", HttpStatus.BAD_REQUEST);
+        }
+
+        Optional<User> optionalUserForUsername = userRepository.findByUsername(userDto.getUsername());
+
+        if (optionalUserForUsername.isPresent()) {
+            throw new AppException("Username already exists", HttpStatus.BAD_REQUEST);
+        }
+
+        User user = userMapper.signUpToUser(userDto);
+        user.setRole(UserRole.ADMIN);
         user.setPassword(passwordEncoder.encode(CharBuffer.wrap(userDto.getPassword())));
 
         User savedUser = userRepository.save(user);
@@ -67,26 +97,19 @@ public class UserService {
                 .orElseThrow(() -> new AppException("Unknown user", HttpStatus.NOT_FOUND));
         return userMapper.toUserDto(user);
     }
+    public List<UserDto> getAllUsers() {
+
+        Iterable<User> users =userRepository.findAll();
+        List<UserDto> results = new ArrayList<>();
+
+        users.forEach(result -> results.add(EntityToDtoMapper.mapUserToDto(result)));
+        return results;
+    }
+    public UserDto promoteUserToModerator(String username){
+        User user = userRepository.findByUsername(username).orElseThrow(() -> new AppException("Unknown user", HttpStatus.NOT_FOUND));
+        user.setRole(MODERATOR);
+        userRepository.save(user);
+        return EntityToDtoMapper.mapUserToDto(user);
+    }
 
 }
-
-//import com.app.SmartReader.models.User;
-//import com.app.SmartReader.repositories.UserRepository;
-//import org.springframework.beans.factory.annotation.Autowired;
-//import org.springframework.security.core.userdetails.UserDetails;
-//import org.springframework.security.core.userdetails.UserDetailsService;
-//import org.springframework.security.core.userdetails.UsernameNotFoundException;
-//import com.app.SmartReader.dtos.UserDto;
-//
-//import java.util.Optional;
-
-//public class UserService implements UserDetailsService {
-    /**DE REFACUT*/
-//    @Autowired
-//    private UserRepository userRepository;
-//    @Override
-//    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-//        Optional<User> user = userRepository.findByUsername(username);
-//        return user.map(UserDto::new).orElseThrow(()->new UsernameNotFoundException("User does not exist"));
-//    }
-//}

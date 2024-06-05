@@ -1,6 +1,7 @@
 package com.app.SmartReader.dtos;
 
 import com.app.SmartReader.utils.enums.BookState;
+import com.app.SmartReader.utils.enums.BookStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -21,7 +22,7 @@ public class BookDto {
     private String language;
     private String image;
     private String genre;
-    private Boolean isPublic;
-    private UserDto createdBy;
+    private BookStatus isPublic;
+    private Integer createdBy;
     private String editure;
 }
