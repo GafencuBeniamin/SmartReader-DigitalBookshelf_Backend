@@ -112,4 +112,9 @@ public class UserService {
         return EntityToDtoMapper.mapUserToDto(user);
     }
 
+    public UserDto getMyDetails(String username){
+        User user = userRepository.findByUsername(username).orElseThrow(() -> new AppException("Unknown user", HttpStatus.NOT_FOUND));
+        return EntityToDtoMapper.mapUserToDto(user);
+    }
+
 }

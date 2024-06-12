@@ -74,7 +74,13 @@ public class BookService {
 
     public BookDto removeBook(Integer id){
         Book result = bookRepository.findById(id).orElseThrow(() -> new CrudOperationException("Book does not exist"));
-        bookRepository.deleteById(id);
+        // Remove the book from all users' libraries
+        Set<User> users = result.getUsers();
+        for (User user : users) {
+            user.getBooks().remove(result);
+            userRepository.save(user);
+        }
+        bookRepository.delete(result);
         return EntityToDtoMapper.mapBookToDto(result);
     }
     /** USER SPECIFIC CRUD BELOW **/

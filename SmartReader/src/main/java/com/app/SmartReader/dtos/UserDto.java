@@ -17,7 +17,7 @@ import java.util.*;
 public class UserDto{
     private Integer id;
     private String username;
-    private String email;
+    private String email;   
     private UserRole role;
     private String picture;
     private Set<UserDto> friends;

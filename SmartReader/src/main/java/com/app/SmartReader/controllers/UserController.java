@@ -33,7 +33,7 @@ public class UserController {
     @GetMapping("/myDetails")
     @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('USER') or hasAuthority('MODERATOR')")
     public ResponseEntity<Object> getMyDetails(){
-        return ResponseEntity.ok(userRepository.findByUsername(getLoggedInUserDetails().getUsername()));
+        return ResponseEntity.ok(userService.getMyDetails(getLoggedInUserDetails().getUsername()));
     }
     @PutMapping("/promoteUserToModerator/{username}")
     @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('MODERATOR')")
