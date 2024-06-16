@@ -50,6 +50,7 @@ public class NoteService {
         Note note = Note.builder()
                 .createdBy(user)
                 .book(book)
+                .title(noteDto.getTitle())
                 .content(noteDto.getContent())
                 .page(noteDto.getPage())
                 .comment(noteDto.getComment())
@@ -67,6 +68,7 @@ public class NoteService {
 
         note.setContent(noteDto.getContent());
         note.setPage(noteDto.getPage());
+        note.setTitle(noteDto.getTitle());
         note.setComment(noteDto.getComment());
         note.setCreatedBy(user);
         note.setBook(book);
@@ -109,6 +111,7 @@ public class NoteService {
             Note note = Note.builder()
                     .createdBy(user)
                     .book(book)
+                    .title(noteDto.getTitle())
                     .content(noteDto.getContent())
                     .page(noteDto.getPage())
                     .comment(noteDto.getComment())
@@ -137,6 +140,7 @@ public class NoteService {
         if (note.getCreatedBy().getId().equals(user.getId())) {
             note.setContent(noteDto.getContent());
             note.setPage(noteDto.getPage());
+            note.setTitle(noteDto.getTitle());
             note.setComment(noteDto.getComment());
             note.setCreatedBy(user);
             note.setBook(book);

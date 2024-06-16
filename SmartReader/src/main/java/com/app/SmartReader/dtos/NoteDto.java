@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 public class NoteDto {
     private Integer id;
     private Integer book;
+    private String title;
     private Integer createdBy;
     private String content;
     private Integer page;

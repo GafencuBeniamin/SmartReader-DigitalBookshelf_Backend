@@ -24,4 +24,5 @@ public class Note {
     private String content;
     private Integer page;
     private String comment;
+    private String title;
 }

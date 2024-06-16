@@ -135,8 +135,7 @@ public class BookService {
         else throw new CrudOperationException("User does not exist");
     }
     public BookDto updateBookByUser (Integer id, BookDto bookDto, String username){
-        User user = userRepository.findById(bookDto.getCreatedBy()).orElseThrow(() -> new CrudOperationException("User does not exist"));
-        user =  userRepository.findByUsername(username).orElseThrow(() -> new CrudOperationException("User does not exist"));
+        User user =  userRepository.findByUsername(username).orElseThrow(() -> new CrudOperationException("User does not exist"));
         Book book=bookRepository.findById(id).orElseThrow(() -> new CrudOperationException("Book does not exist"));
         if (book.getCreatedBy().getId().equals(user.getId())) {
             book.setImage(bookDto.getImage());
@@ -178,6 +177,12 @@ public class BookService {
         User user = userRepository.findByUsername(username).orElseThrow(() -> new CrudOperationException("User does not exist"));
         Book book=bookRepository.findById(id).orElseThrow(() -> new CrudOperationException("Book does not exist"));
         if (book.getCreatedBy().getId().equals(user.getId())) {
+            // Remove the book from all users' libraries
+            Set<User> users = book.getUsers();
+            for (User user1 : users) {
+                user1.getBooks().remove(book);
+                userRepository.save(user1);
+            }
             bookRepository.deleteById(id);
             return EntityToDtoMapper.mapBookToDto(book);
         }
