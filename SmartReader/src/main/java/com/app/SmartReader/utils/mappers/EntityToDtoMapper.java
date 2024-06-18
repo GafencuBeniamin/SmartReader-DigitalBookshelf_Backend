@@ -25,6 +25,7 @@ public class EntityToDtoMapper {
                 .map(EntityToDtoMapper::mapUserToDto)
                 .collect(Collectors.toSet());
 
+
         return UserDto.builder()
                 .id(user.getId())
                 .username(user.getUsername())
@@ -40,7 +41,6 @@ public class EntityToDtoMapper {
     public static BookDto mapBookToDto(Book book) {
         return BookDto.builder()
                 .id(book.getId())
-                .state(book.getState())
                 .title(book.getTitle())
                 .genre(book.getGenre())
                 .author(book.getAuthor())
@@ -50,6 +50,7 @@ public class EntityToDtoMapper {
                 .noOfPages(book.getNoOfPages())
                 .image(book.getImage())
                 .editure(book.getEditure())
+                .bookStates(book.getBookStates())
                 .build();
     }
 
@@ -57,6 +58,7 @@ public class EntityToDtoMapper {
         return NoteDto.builder()
                 .id(note.getId())
                 .book(note.getBook().getId())
+                .title(note.getTitle())
                 .createdBy(note.getCreatedBy().getId())
                 .content(note.getContent())
                 .page(note.getPage())

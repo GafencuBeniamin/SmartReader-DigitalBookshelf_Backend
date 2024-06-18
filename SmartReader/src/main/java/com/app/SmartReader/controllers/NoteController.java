@@ -70,7 +70,7 @@ public class NoteController {
     public ResponseEntity<NoteDto> updateNoteByUser(@PathVariable Integer id, @RequestBody NoteDto noteDto) {
         return ResponseEntity.ok(noteService.updateNoteByUser(id,noteDto,getLoggedInUserDetails().getUsername()));
     }
-    @PutMapping("/removeNoteByUser/{id}")
+    @DeleteMapping("/removeNoteByUser/{id}")
     @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('USER') or hasAuthority('MODERATOR')")
     public ResponseEntity<NoteDto> removeNoteByUser(@PathVariable Integer id) {
         return ResponseEntity.ok(noteService.removeNoteByUser(id,getLoggedInUserDetails().getUsername()));

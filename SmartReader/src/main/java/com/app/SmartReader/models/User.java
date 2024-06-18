@@ -28,7 +28,7 @@ public class User {
             inverseJoinColumns = @JoinColumn(name = "book_id")
     )
     private Set<Book> books;
-    @OneToMany(mappedBy = "id", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "createdBy", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Set<Note> notes;
     @Column(unique = true)
     private String username;

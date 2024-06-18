@@ -4,6 +4,8 @@ import com.app.SmartReader.dtos.BookDto;
 import com.app.SmartReader.dtos.UserDto;
 import com.app.SmartReader.models.User;
 import com.app.SmartReader.services.BookService;
+import com.app.SmartReader.utils.enums.BookState;
+import com.app.SmartReader.utils.enums.BookStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -59,7 +61,11 @@ public class BookController {
     public ResponseEntity<List<BookDto>> getUserBooks() {
         return ResponseEntity.ok(bookService.getUserBooks(getLoggedInUserDetails().getUsername()));
     }
-
+    @GetMapping("/getBookByIdByUser/{id}")
+    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('USER') or hasAuthority('MODERATOR')")
+    public ResponseEntity<BookDto> getBookByIdByUser(@PathVariable Integer id) {
+        return ResponseEntity.ok(bookService.getBookByIdByUser(id, getLoggedInUserDetails().getUsername()));
+    }
     @PutMapping("/addNewBookToUserLibrary/{id}")
     @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('USER') or hasAuthority('MODERATOR')")
     public ResponseEntity<BookDto> addNewBookToUserLibrary(@PathVariable Integer id) {
@@ -75,6 +81,11 @@ public class BookController {
     public ResponseEntity<BookDto> updateBookByUser(@PathVariable Integer id, @RequestBody BookDto bookDto) {
         return ResponseEntity.ok(bookService.updateBookByUser(id,bookDto,getLoggedInUserDetails().getUsername()));
     }
+    @PutMapping("/updatePublicBookByUser/{id}")
+    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('USER') or hasAuthority('MODERATOR')")
+    public ResponseEntity<BookDto> updatePublicBookByUser(@PathVariable Integer id, @RequestBody BookState bookState) {
+        return ResponseEntity.ok(bookService.updatePublicBookByUser(id,bookState,getLoggedInUserDetails().getUsername()));
+    }
     @PutMapping("/removeBookFromUserLibrary/{id}")
     @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('USER') or hasAuthority('MODERATOR')")
     public ResponseEntity<BookDto> removeFromUserLibrary(@PathVariable Integer id) {
@@ -84,5 +95,16 @@ public class BookController {
     @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('USER') or hasAuthority('MODERATOR')")
     public ResponseEntity<BookDto> removeBookByUser(@PathVariable Integer id) {
         return ResponseEntity.ok(bookService.removeBookByUser(id,getLoggedInUserDetails().getUsername()));
+    }
+
+//    @GetMapping("/search")
+//    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('USER') or hasAuthority('MODERATOR')")
+//    public List<BookDto> searchPublicBooks(@RequestBody String query) {
+//        return bookService.searchPublicBooks(query,getLoggedInUserDetails().getUsername());
+//    }
+    @PutMapping("/changeStatus/{id}")
+    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('USER') or hasAuthority('MODERATOR')")
+    public BookDto changeBookStatus(@PathVariable Integer id, @RequestBody BookStatus status) {
+        return bookService.changeBookStatus(id,getLoggedInUserDetails().getUsername(),status);
     }
 }

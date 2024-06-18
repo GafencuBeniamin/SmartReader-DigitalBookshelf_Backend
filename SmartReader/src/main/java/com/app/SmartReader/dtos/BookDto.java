@@ -7,6 +7,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Map;
 import java.util.Set;
 
 @Data
@@ -15,7 +16,7 @@ import java.util.Set;
 @AllArgsConstructor
 public class BookDto {
     private Integer id;
-    private BookState state;
+    private Map<Integer, BookState> bookStates;
     private Set<String> author;
     private String title;
     private Integer noOfPages;

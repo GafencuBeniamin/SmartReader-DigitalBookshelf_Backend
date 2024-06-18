@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.Map;
 import java.util.Set;
 
 @Entity
@@ -20,7 +21,12 @@ public class Book {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
-    private BookState state;
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "book_states", joinColumns = @JoinColumn(name = "book_id"))
+    @MapKeyColumn(name = "user_id")
+    @Column(name = "state")
+    @Enumerated(EnumType.STRING)
+    private Map<Integer, BookState> bookStates;
     private Set<String> author;
     private String title;
     private Integer noOfPages;
@@ -33,7 +39,7 @@ public class Book {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "user_id", nullable = false)
     private User createdBy;
-    @ManyToMany(mappedBy = "books")
+    @ManyToMany(mappedBy = "books", fetch = FetchType.LAZY)
     private Set<User> users;
     private String editure;
 }
