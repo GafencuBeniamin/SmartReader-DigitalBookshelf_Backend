@@ -144,6 +144,7 @@ public class NoteService {
             note.setComment(noteDto.getComment());
             note.setCreatedBy(user);
             note.setBook(book);
+            noteRepository.save(note);
             return EntityToDtoMapper.mapNoteToDto(note);
         }
         else throw  new CrudOperationException("User can't edit an unowned note");
