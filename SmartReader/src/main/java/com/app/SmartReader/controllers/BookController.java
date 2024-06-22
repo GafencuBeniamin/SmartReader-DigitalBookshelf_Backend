@@ -96,15 +96,21 @@ public class BookController {
     public ResponseEntity<BookDto> removeBookByUser(@PathVariable Integer id) {
         return ResponseEntity.ok(bookService.removeBookByUser(id,getLoggedInUserDetails().getUsername()));
     }
-
-//    @GetMapping("/search")
-//    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('USER') or hasAuthority('MODERATOR')")
-//    public List<BookDto> searchPublicBooks(@RequestBody String query) {
-//        return bookService.searchPublicBooks(query,getLoggedInUserDetails().getUsername());
-//    }
     @PutMapping("/changeStatus/{id}")
     @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('USER') or hasAuthority('MODERATOR')")
-    public BookDto changeBookStatus(@PathVariable Integer id, @RequestBody BookStatus status) {
-        return bookService.changeBookStatus(id,getLoggedInUserDetails().getUsername(),status);
+    public ResponseEntity<BookDto> changeBookStatus(@PathVariable Integer id, @RequestBody BookStatus status) {
+        return ResponseEntity.ok(bookService.changeBookStatus(id,getLoggedInUserDetails().getUsername(),status));
+    }
+
+    @GetMapping("/pending")
+    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('MODERATOR')")
+    public ResponseEntity<List<BookDto>> getPendingBooks() {
+        return ResponseEntity.ok(bookService.getAllPendingBooks(getLoggedInUserDetails().getUsername()));
+    }
+
+    @GetMapping("/search")
+    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('USER') or hasAuthority('MODERATOR')")
+    public ResponseEntity<List<BookDto>> searchBooks(@RequestBody String keyword) {
+        return ResponseEntity.ok(bookService.searchBooksByTitleOrAuthor(keyword.trim(), getLoggedInUserDetails().getUsername()));
     }
 }

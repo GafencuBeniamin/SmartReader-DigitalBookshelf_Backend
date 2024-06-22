@@ -17,6 +17,7 @@ import com.app.SmartReader.utils.enums.BookState;
 
 import javax.management.relation.Role;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @AllArgsConstructor
 @Service
@@ -253,14 +254,6 @@ public class BookService {
         }
         else throw new CrudOperationException("User can't delete an unowned book");
     }
-//    public List<BookDto> searchPublicBooks(String searchString, String username) {
-//
-//        User user = userRepository.findByUsername(username).orElseThrow(() -> new CrudOperationException("User does not exist"));
-//        List<Book> books = bookRepository.searchBooksByTitleOrAuthorAndStatus(searchString, BookStatus.PUBLIC);
-//        List<BookDto> results = new ArrayList<>();
-//        books.forEach(book -> results.add(EntityToDtoMapper.mapBookToDto(book)));
-//        return results;
-//    }
     public BookDto changeBookStatus(Integer id, String username, BookStatus status) {
         User user = userRepository.findByUsername(username).orElseThrow(() -> new CrudOperationException("User does not exist"));
         Book book = bookRepository.findById(id).orElseThrow(() -> new CrudOperationException("Book does not exist"));
@@ -272,5 +265,46 @@ public class BookService {
             bookRepository.save(book);
         }
         return EntityToDtoMapper.mapBookToDto(book);
+    }
+    public List<BookDto> getAllPendingBooks( String username) {
+
+        User user = userRepository.findByUsername(username).orElseThrow(() -> new CrudOperationException("User does not exist"));
+        List<Book> books = bookRepository.findAll();
+
+        // Filter books with isPublic == BookStatus.PENDING
+        List<Book> pendingBooks = books.stream()
+                .filter(book -> book.getIsPublic() == BookStatus.PENDING)
+                .toList();
+
+        // Map pending books to BookDto
+        List<BookDto> results = pendingBooks.stream()
+                .map(EntityToDtoMapper::mapBookToDto)
+                .collect(Collectors.toList());
+        return results;
+    }
+    public List<BookDto> searchBooksByTitleOrAuthor(String keyword, String username) {
+        if (keyword == null || keyword.trim().isEmpty()) {
+            throw new CrudOperationException("Keyword cannot be empty");
+        }
+
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new CrudOperationException("User does not exist"));
+
+        List<Book> books = bookRepository.findAll();
+
+        List<Book> filteredBooks = books.stream()
+                .filter(book -> book.getIsPublic() == BookStatus.PUBLIC &&
+                        (book.getTitle().toLowerCase().contains(keyword.toLowerCase()) ||
+                                authorContainsKeyword(book.getAuthor(), keyword)))
+                .toList();
+
+        return filteredBooks.stream()
+                .map(EntityToDtoMapper::mapBookToDto)
+                .collect(Collectors.toList());
+    }
+
+    private boolean authorContainsKeyword(Set<String> authors, String keyword) {
+        return authors.stream()
+                .anyMatch(author -> author.toLowerCase().contains(keyword.toLowerCase()));
     }
 }

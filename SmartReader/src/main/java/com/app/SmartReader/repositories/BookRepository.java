@@ -11,9 +11,4 @@ import java.util.List;
 
 @Repository
 public interface BookRepository extends JpaRepository<Book, Integer> {
-//    @Query("SELECT b FROM Book b WHERE b.isPublic = :status AND " +
-//            "(LOWER(b.title) LIKE LOWER(:searchString) OR " +
-//            "LOWER(b.author) LIKE LOWER(:searchString))")
-//    List<Book> searchBooksByTitleOrAuthorAndStatus(@Param("searchString") String searchString,
-//                                                   @Param("status") BookStatus status);
 }
