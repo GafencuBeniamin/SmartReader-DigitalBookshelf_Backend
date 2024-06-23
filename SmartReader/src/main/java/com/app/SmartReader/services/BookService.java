@@ -202,7 +202,10 @@ public class BookService {
         Map<Integer, BookState> foundBookStates= book.getBookStates();
         foundBookStates.put(user.getId(), firstEntry.getValue());
 
-        if (book.getCreatedBy().getId().equals(user.getId()) || user.getRole()== UserRole.ADMIN || user.getRole()== UserRole.MODERATOR) {
+        if (book.getCreatedBy().getId().equals(user.getId()) ||
+                book.getIsPublic()==BookStatus.PUBLIC ||
+                user.getRole()== UserRole.ADMIN ||
+                user.getRole()== UserRole.MODERATOR) {
             book.setImage(bookDto.getImage());
             book.setGenre(bookDto.getGenre());
             book.setEditure(bookDto.getEditure());

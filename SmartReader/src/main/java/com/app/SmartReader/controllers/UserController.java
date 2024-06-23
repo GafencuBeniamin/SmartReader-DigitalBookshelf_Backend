@@ -3,6 +3,7 @@ package com.app.SmartReader.controllers;
 import com.app.SmartReader.dtos.UserDto;
 import com.app.SmartReader.repositories.UserRepository;
 import com.app.SmartReader.services.UserService;
+import com.app.SmartReader.utils.enums.UserRole;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -35,10 +36,10 @@ public class UserController {
     public ResponseEntity<Object> getMyDetails(){
         return ResponseEntity.ok(userService.getMyDetails(getLoggedInUserDetails().getUsername()));
     }
-    @PutMapping("/promoteUserToModerator/{username}")
+    @PutMapping("/changeUserRole/{username}")
     @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('MODERATOR')")
-    public ResponseEntity<Object> promoteUserToModerator(@PathVariable String username){
-        return ResponseEntity.ok(userService.promoteUserToModerator(username));
+    public ResponseEntity<Object> changeUserRole(@PathVariable String username, @RequestBody UserRole role){
+        return ResponseEntity.ok(userService.changeUserRole(username, role));
     }
     public UserDto getLoggedInUserDetails(){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();

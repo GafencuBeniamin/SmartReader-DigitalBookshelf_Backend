@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static com.app.SmartReader.utils.enums.UserRole.MODERATOR;
+import static com.app.SmartReader.utils.enums.UserRole.*;
 
 @RequiredArgsConstructor
 @Service
@@ -55,7 +55,7 @@ public class UserService {
         }
 
         User user = userMapper.signUpToUser(userDto);
-        user.setRole(UserRole.USER);
+        user.setRole(USER);
         user.setPassword(passwordEncoder.encode(CharBuffer.wrap(userDto.getPassword())));
 
         User savedUser = userRepository.save(user);
@@ -76,7 +76,7 @@ public class UserService {
         }
 
         User user = userMapper.signUpToUser(userDto);
-        user.setRole(UserRole.ADMIN);
+        user.setRole(ADMIN);
         user.setPassword(passwordEncoder.encode(CharBuffer.wrap(userDto.getPassword())));
 
         User savedUser = userRepository.save(user);
@@ -105,9 +105,9 @@ public class UserService {
         users.forEach(result -> results.add(EntityToDtoMapper.mapUserToDto(result)));
         return results;
     }
-    public UserDto promoteUserToModerator(String username){
+    public UserDto changeUserRole(String username, UserRole role){
         User user = userRepository.findByUsername(username).orElseThrow(() -> new AppException("Unknown user", HttpStatus.NOT_FOUND));
-        user.setRole(MODERATOR);
+        user.setRole(role);
         userRepository.save(user);
         return EntityToDtoMapper.mapUserToDto(user);
     }

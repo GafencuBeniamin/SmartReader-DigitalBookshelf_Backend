@@ -108,9 +108,9 @@ public class BookController {
         return ResponseEntity.ok(bookService.getAllPendingBooks(getLoggedInUserDetails().getUsername()));
     }
 
-    @GetMapping("/search")
+    @GetMapping("/search/{keyword}")
     @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('USER') or hasAuthority('MODERATOR')")
-    public ResponseEntity<List<BookDto>> searchBooks(@RequestBody String keyword) {
+    public ResponseEntity<List<BookDto>> searchBooks(@PathVariable String keyword) {
         return ResponseEntity.ok(bookService.searchBooksByTitleOrAuthor(keyword.trim(), getLoggedInUserDetails().getUsername()));
     }
 }
