@@ -116,5 +116,13 @@ public class UserService {
         User user = userRepository.findByUsername(username).orElseThrow(() -> new AppException("Unknown user", HttpStatus.NOT_FOUND));
         return EntityToDtoMapper.mapUserToDto(user);
     }
+    public UserDto updateMyDetails(Integer id, UserDto userDto){
+        User user = userRepository.findById(id).orElseThrow(() -> new AppException("Unknown user", HttpStatus.NOT_FOUND));
+        user.setEmail(userDto.getEmail());
+        user.setUsername(userDto.getUsername());
+        user.setPicture(userDto.getPicture());
+        userRepository.save(user);
+        return EntityToDtoMapper.mapUserToDto(user);
+    }
 
 }

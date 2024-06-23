@@ -41,6 +41,11 @@ public class UserController {
     public ResponseEntity<Object> changeUserRole(@PathVariable String username, @RequestBody UserRole role){
         return ResponseEntity.ok(userService.changeUserRole(username, role));
     }
+    @PutMapping("/updateMyDetails")
+    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('USER') or hasAuthority('MODERATOR')")
+    public ResponseEntity<Object> updateMyDetails(@RequestBody UserDto userDto){
+        return ResponseEntity.ok(userService.updateMyDetails(getLoggedInUserDetails().getId(), userDto));
+    }
     public UserDto getLoggedInUserDetails(){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication != null && authentication.getPrincipal() instanceof UserDto){
