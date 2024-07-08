@@ -23,26 +23,31 @@ public class NoteController {
     }
 
     @GetMapping
+    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('MODERATOR')")
     public ResponseEntity<List<NoteDto>> getAllNotes() {
         return ResponseEntity.ok(noteService.getAllNotes());
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('MODERATOR')")
     public ResponseEntity<NoteDto> getNoteById(@PathVariable Integer id) {
         return ResponseEntity.ok(noteService.getNoteById(id));
     }
 
     @PostMapping
+    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('MODERATOR')")
     public ResponseEntity<NoteDto> addNote(@RequestBody NoteDto noteDto) {
         return ResponseEntity.ok(noteService.addNote(noteDto));
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('MODERATOR')")
     public ResponseEntity<NoteDto> updateNote(@PathVariable Integer id, @RequestBody NoteDto noteDto) {
         return ResponseEntity.ok(noteService.updateNote(id, noteDto));
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('MODERATOR')")
     public ResponseEntity<NoteDto> removeNote(@PathVariable Integer id) {
         return ResponseEntity.ok(noteService.removeNote(id));
     }

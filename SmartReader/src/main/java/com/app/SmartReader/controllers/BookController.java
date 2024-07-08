@@ -29,22 +29,25 @@ public class BookController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('MODERATOR')")
     public ResponseEntity<BookDto> getBookById(@PathVariable Integer id) {
         return ResponseEntity.ok(bookService.getBookById(id));
     }
 
     @PostMapping
+    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('MODERATOR')")
     public ResponseEntity<BookDto> addBook(@RequestBody BookDto bookDto) {
         return ResponseEntity.ok(bookService.addBook(bookDto));
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('USER') or hasAuthority('MODERATOR')")
+    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('MODERATOR')")
     public ResponseEntity<BookDto> updateBook(@PathVariable Integer id, @RequestBody BookDto bookDto) {
         return ResponseEntity.ok(bookService.updateBook(id, bookDto));
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('MODERATOR')")
     public ResponseEntity<BookDto> removeBook(@PathVariable Integer id) {
         return ResponseEntity.ok(bookService.removeBook(id));
     }
@@ -83,7 +86,7 @@ public class BookController {
     }
     @PutMapping("/updatePublicBookByUser/{id}")
     @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('USER') or hasAuthority('MODERATOR')")
-    public ResponseEntity<BookDto> updatePublicBookByUser(@PathVariable Integer id, @RequestBody BookState bookState) {
+    public ResponseEntity<BookDto> updatePublicBookByUser(@PathVariable Integer id, @RequestBody BookState bookState) { 
         return ResponseEntity.ok(bookService.updatePublicBookByUser(id,bookState,getLoggedInUserDetails().getUsername()));
     }
     @PutMapping("/removeBookFromUserLibrary/{id}")

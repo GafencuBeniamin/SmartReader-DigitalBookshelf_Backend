@@ -28,6 +28,7 @@ public class UserController {
         return ResponseEntity.ok(userService.getAllUsers());
     }
     @GetMapping("/single/{username}")
+    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('USER') or hasAuthority('MODERATOR')")
     public ResponseEntity<Object> getUserByUsername(@PathVariable String username){
         return ResponseEntity.ok(userRepository.findByUsername(username));
     }
@@ -37,7 +38,7 @@ public class UserController {
         return ResponseEntity.ok(userService.getMyDetails(getLoggedInUserDetails().getUsername()));
     }
     @PutMapping("/changeUserRole/{username}")
-    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('MODERATOR')")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<Object> changeUserRole(@PathVariable String username, @RequestBody UserRole role){
         return ResponseEntity.ok(userService.changeUserRole(username, role));
     }
@@ -55,6 +56,7 @@ public class UserController {
     }
 
     @DeleteMapping("/delete/{username}")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<UserDto> deleteUser(@PathVariable String username){
         return ResponseEntity.ok(userService.removeUser(username));
     }
