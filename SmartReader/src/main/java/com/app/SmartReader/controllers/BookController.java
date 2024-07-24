@@ -86,7 +86,7 @@ public class BookController {
     }
     @PutMapping("/updatePublicBookByUser/{id}")
     @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('USER') or hasAuthority('MODERATOR')")
-    public ResponseEntity<BookDto> updatePublicBookByUser(@PathVariable Integer id, @RequestBody BookState bookState) { 
+    public ResponseEntity<BookDto> updatePublicBookByUser(@PathVariable Integer id, @RequestBody BookState bookState) {
         return ResponseEntity.ok(bookService.updatePublicBookByUser(id,bookState,getLoggedInUserDetails().getUsername()));
     }
     @PutMapping("/removeBookFromUserLibrary/{id}")

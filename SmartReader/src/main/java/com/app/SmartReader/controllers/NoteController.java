@@ -29,7 +29,7 @@ public class NoteController {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('MODERATOR')")
+    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('MODERATOR') or hasAuthority('USER')")
     public ResponseEntity<NoteDto> getNoteById(@PathVariable Integer id) {
         return ResponseEntity.ok(noteService.getNoteById(id));
     }
